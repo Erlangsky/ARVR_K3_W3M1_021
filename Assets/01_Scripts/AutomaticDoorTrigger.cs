@@ -9,12 +9,12 @@ public class AutomaticDoorTrigger : MonoBehaviour
     {
         if (!other.CompareTag("Player")) return;
 
-        doorAnimator.SetBool(DoorOpen, true);
+        doorAnimator.SetBool(DoorOpen, false);
     }
     private void OnTriggerExit(Collider other)
     {
         if (!other.CompareTag("Player")) return;
 
-        doorAnimator.SetBool(DoorOpen, false);
+        doorAnimator.SetBool(DoorOpen, true);
     }
 }
