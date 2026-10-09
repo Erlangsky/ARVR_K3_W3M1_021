@@ -1,64 +1,59 @@
 using UnityEngine;
 
-public class SafetyZoneController : MonoBehaviour
+public class SafetyZoneManager : MonoBehaviour
 {
-    [Header("Components & References")]
+    [Header("Components Reference")]
     [SerializeField] private Animator barrierAnimator;
-    [SerializeField] private MeshRenderer lampRenderer;
+    [SerializeField] private Renderer lampRenderer;
+    [SerializeField] private Light warningLight;
 
-    [Header("Materials")]
+    [Header("Lamp Materials")]
     [SerializeField] private Material greenMaterial;
     [SerializeField] private Material redMaterial;
 
-    private static readonly int IsClosedHash = Animator.StringToHash("IsClosed");
-
-    private bool isInZone = false;
+    private const string PLAYER_TAG = "Player";
+    private const string ANIM_PARAM_IS_CLOSED = "IsClosed";
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!other.CompareTag("Player")) return;
-
-        if (isInZone) return;
-
-        isInZone = true;
-        ActivateSafetySystem();
+        if (other.CompareTag(PLAYER_TAG))
+        {
+            SetSafetySystemState(false);
+        }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (!other.CompareTag("Player")) return;
-
-        if (!isInZone) return;
-
-        isInZone = false;
-        DeactivateSafetySystem();
-    }
-
-    private void ActivateSafetySystem()
-    {
-        SetBarrierState(true);
-        SetLampMaterial(redMaterial);
-    }
-
-    private void DeactivateSafetySystem()
-    {
-        SetBarrierState(false);
-        SetLampMaterial(greenMaterial);
-    }
-
-    private void SetBarrierState(bool isClosed)
-    {
-        if (barrierAnimator != null)
+        if (other.CompareTag(PLAYER_TAG))
         {
-            barrierAnimator.SetBool(IsClosedHash, isClosed);
+            SetSafetySystemState(true);
         }
     }
 
-    private void SetLampMaterial(Material newMaterial)
+    private void SetSafetySystemState(bool isPlayerInside)
     {
-        if (lampRenderer != null && newMaterial != null)
+        ControlBarrier(isPlayerInside);
+        UpdateWarningLamp(isPlayerInside);
+    }
+
+    private void ControlBarrier(bool close)
+    {
+        if (barrierAnimator != null)
         {
-            lampRenderer.material = newMaterial;
+            barrierAnimator.SetBool(ANIM_PARAM_IS_CLOSED, close);
+        }
+    }
+
+    private void UpdateWarningLamp(bool isRed)
+    {
+        if (lampRenderer != null)
+        {
+            lampRenderer.material = isRed ? redMaterial : greenMaterial;
+        }
+
+        if (warningLight != null)
+        {
+            warningLight.color = isRed ? Color.red : Color.green;
         }
     }
 }
