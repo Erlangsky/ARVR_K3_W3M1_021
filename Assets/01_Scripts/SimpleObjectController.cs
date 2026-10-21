@@ -16,6 +16,12 @@ public class PlayerController : MonoBehaviour
     private Vector3 velocity; 
     private float xRotation = 0f;
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        Debug.Log($"Collision dengan: {collision.gameObject.name}");
+    }
+
+
     void Start()
     {
         characterController = GetComponent<CharacterController>();
@@ -62,5 +68,7 @@ public class PlayerController : MonoBehaviour
         {
             transform.Translate(move * moveSpeed * Time.deltaTime, Space.World);
         }
+
+
     }
 }
